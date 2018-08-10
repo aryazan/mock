@@ -44,4 +44,8 @@ public class Application {
             default: break;
         }
     }
+
+    public int ggg(){
+        return 11;
+    }
 }

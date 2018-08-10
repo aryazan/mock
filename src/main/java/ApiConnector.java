@@ -19,8 +19,8 @@ public class ApiConnector {
     }
 
     private ApiConnector(){
-        this.get = new GetMethod("https://httpbin.org/get");
-        this.post = new PostMethod("https://httpbin.org/post");
+        this.get = new GetMethod("http://192.168.99.100/get");
+        this.post = new PostMethod("http://192.168.99.100/post");
     }
 
     public int performGetRequest(String textMessage){
@@ -28,8 +28,8 @@ public class ApiConnector {
         int status = 0;
         try {
             client = new HttpClient();
-            status = get.getStatusCode();
             client.executeMethod(get);
+            status = get.getStatusCode();
         } catch (IOException e) {
             e.printStackTrace();
         }
