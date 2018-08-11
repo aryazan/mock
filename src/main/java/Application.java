@@ -45,7 +45,4 @@ public class Application {
         }
     }
 
-    public int ggg(){
-        return 11;
-    }
 }
