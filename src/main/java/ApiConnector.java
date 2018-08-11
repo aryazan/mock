@@ -19,8 +19,8 @@ public class ApiConnector {
     }
 
     private ApiConnector(){
-        this.get = new GetMethod("http://192.168.99.100/get");
-        this.post = new PostMethod("http://192.168.99.100/post");
+        this.get = new GetMethod("");
+        this.post = new PostMethod("");
     }
 
     public int performGetRequest(String textMessage){
