@@ -76,6 +76,8 @@ public class ApiConnectorTests {
         ApiConnector apiConnector = ApiConnector.getInstance();
         when(client.executeMethod(get)).thenThrow(IOException.class);
         apiConnector.performGetRequest("test");
+
+        //then
         Mockito.verify(client, Mockito.times(1)).executeMethod(get);
     }
 
@@ -85,9 +87,9 @@ public class ApiConnectorTests {
         PowerMockito.whenNew(PostMethod.class).withAnyArguments()
                 .thenReturn(post);
         PowerMockito.whenNew(HttpClient.class).withAnyArguments().thenReturn(client);
+
         //when
         ApiConnector apiConnector = ApiConnector.getInstance();
-
         doNothing().when(post).addParameter(POST_PARAM_NAME, POST_PARAM_VALUE);
         when(client.executeMethod(post)).thenReturn(HttpStatus.SC_OK);
         apiConnector.performPostRequest("Message for post msg", POST_PARAM_NAME, POST_PARAM_VALUE);
@@ -109,6 +111,21 @@ public class ApiConnectorTests {
 
         //then
         Mockito.verify(post, Mockito.times(1)).addParameter(POST_PARAM_NAME, POST_PARAM_VALUE);
+    }
+
+    @Test
+    public void testApiConnectorPerformPostRequestExceptionCatching() throws Exception {
+        //given
+        PowerMockito.whenNew(PostMethod.class).withAnyArguments().thenReturn(post);
+        PowerMockito.whenNew(HttpClient.class).withAnyArguments().thenReturn(client);
+
+        //when
+        ApiConnector apiConnector = ApiConnector.getInstance();
+        when(client.executeMethod(get)).thenThrow(IOException.class);
+        apiConnector.performPostRequest("Message for post msg", POST_PARAM_NAME, POST_PARAM_VALUE);
+
+        //then
+        Mockito.verify(client, Mockito.times(1)).executeMethod(post);
     }
 
     @Test
