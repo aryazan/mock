@@ -1,15 +1,15 @@
 import org.apache.http.HttpStatus;
 
 public class Application {
-    private void sendGetApiRequestViaConnector(){
+    private void sendGetApiRequestViaConnector() {
         ApiConnector.getInstance().performGetRequest("perform GET request");
     }
 
-    private void sendPostRequestViaConnector(){
+    private void sendPostRequestViaConnector() {
         ApiConnector.getInstance().performPostRequest("perform POST request", "paramName", "paramValue");
     }
 
-    private void runGetRequestsInAnotherThread(){
+    private void runGetRequestsInAnotherThread() {
         Thread t = new Thread(new Runnable() {
             public void run() {
                 ApiConnector.getInstance().performGetRequest("perform GET request in thread" + Thread.currentThread().getId());
@@ -20,7 +20,7 @@ public class Application {
 
     private void runPostIfGet200() throws Exception {
         int status = ApiConnector.getInstance().performGetRequest("text");
-        if(status == HttpStatus.SC_OK){
+        if (status == HttpStatus.SC_OK) {
             ApiConnector.getInstance().performPostRequest("text", "param", "value");
         } else {
             throw new Exception("GET response is not 200");
@@ -28,7 +28,7 @@ public class Application {
     }
 
     public void runMethod(int method) throws Exception {
-        switch (method){
+        switch (method) {
             case 1:
                 sendGetApiRequestViaConnector();
                 break;
@@ -41,7 +41,8 @@ public class Application {
             case 4:
                 runPostIfGet200();
                 break;
-            default: break;
+            default:
+                break;
         }
     }
 

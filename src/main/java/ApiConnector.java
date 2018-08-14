@@ -11,19 +11,19 @@ public class ApiConnector {
     private GetMethod get;
     private PostMethod post;
 
-    public static ApiConnector getInstance(){
-        if(instance == null){
+    public static ApiConnector getInstance() {
+        if (instance == null) {
             instance = new ApiConnector();
         }
         return instance;
     }
 
-    private ApiConnector(){
-        this.get = new GetMethod("");
-        this.post = new PostMethod("");
+    private ApiConnector() {
+        this.get = new GetMethod("https://httpbin.org/get");
+        this.post = new PostMethod("https://httpbin.org/post");
     }
 
-    public int performGetRequest(String textMessage){
+    public int performGetRequest(String textMessage) {
         System.out.println("Send request");
         int status = 0;
         try {
@@ -37,7 +37,7 @@ public class ApiConnector {
         return status;
     }
 
-    public void performPostRequest(String textMessage, String paramName, String paramValue){
+    public void performPostRequest(String textMessage, String paramName, String paramValue) {
         post.addParameter(paramName, paramValue);
         System.out.println(textMessage);
         try {

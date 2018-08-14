@@ -2,142 +2,146 @@ import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.http.HttpStatus;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
-import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
-import org.powermock.reflect.Whitebox;
 
 import java.io.IOException;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.powermock.api.mockito.PowerMockito.*;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(ApiConnector.class)
-public class ApiConnectorTests {
+public class ApiConnectorTests extends BaseTest {
 
-    private HttpClient client;
-    private GetMethod get;
-    private PostMethod post;
+    private HttpClient mockedClient;
+    private GetMethod mockedGet;
+    private PostMethod mockedPost;
     private static final String POST_PARAM_NAME = "paramName";
     private static final String POST_PARAM_VALUE = "paramValue";
-    private static final String TEXT_MESSAGE_TEMPLATE_FOR_TEST = "This is a template message for the test: [%s]";
+    private static final String TEXT_MESSAGE_TEMPLATE_FOR_TEST = "This is a template message for the test";
 
     @Before
     public void setUp() {
-        client = mock(HttpClient.class);
-        get = mock(GetMethod.class);
-        post = mock(PostMethod.class);
-        Whitebox.setInternalState(ApiConnector.class, "instance", (Object[]) null);
+        mockedClient = mock(HttpClient.class);
+        mockedGet = mock(GetMethod.class);
+        mockedPost = mock(PostMethod.class);
     }
 
 
     @Test
-    public void test_ApiConnector_performGetRequest_return_code_200_if_ok() throws Exception {
+    public void testApiConnectorPerformGetRequestReturnCodeIs200IfOk() throws Exception {
         //given
-        PowerMockito.whenNew(GetMethod.class).withAnyArguments().thenReturn(get);
-        PowerMockito.whenNew(HttpClient.class).withAnyArguments().thenReturn(client);
+        whenNew(GetMethod.class).withAnyArguments().thenReturn(mockedGet);
+        whenNew(HttpClient.class).withAnyArguments().thenReturn(mockedClient);
 
         //when
         ApiConnector apiConnector = ApiConnector.getInstance();
-        when(get.getStatusCode()).thenReturn(HttpStatus.SC_OK);
+        when(mockedGet.getStatusCode()).thenReturn(HttpStatus.SC_OK);
 
         //then
-        assertEquals(HttpStatus.SC_OK, apiConnector.performGetRequest("test message"));
+        assertEquals(HttpStatus.SC_OK, apiConnector.performGetRequest(TEXT_MESSAGE_TEMPLATE_FOR_TEST));
     }
 
     @Test
-    public void test_ApiConnector_performGetRequest_return_code_0_if_exception() throws Exception {
+    public void testApiConnectorPerformGetRequestReturnCode0IfException() throws Exception {
         //given
-        PowerMockito.whenNew(GetMethod.class).withAnyArguments().thenReturn(get);
-        PowerMockito.whenNew(HttpClient.class).withAnyArguments().thenReturn(client);
+        whenNew(GetMethod.class).withAnyArguments().thenReturn(mockedGet);
+        whenNew(HttpClient.class).withAnyArguments().thenReturn(mockedClient);
 
         //when
         ApiConnector apiConnector = ApiConnector.getInstance();
-        when(client.executeMethod(get)).thenThrow(IOException.class);
+        when(mockedClient.executeMethod(mockedGet)).thenThrow(IOException.class);
 
         //then
-        assertEquals(0, apiConnector.performGetRequest("test message"));
+        assertEquals(0, apiConnector.performGetRequest(TEXT_MESSAGE_TEMPLATE_FOR_TEST));
     }
 
     @Test()
-    public void testApiConnectorPerformGetRequest() throws Exception {
+    public void testApiConnectorPerformGetRequestExceptionCatching() throws Exception {
         //given
-        PowerMockito.whenNew(GetMethod.class).withAnyArguments().thenReturn(get);
-        PowerMockito.whenNew(HttpClient.class).withAnyArguments().thenReturn(client);
+        whenNew(GetMethod.class).withAnyArguments().thenReturn(mockedGet);
+        whenNew(HttpClient.class).withAnyArguments().thenReturn(mockedClient);
 
         //when
         ApiConnector apiConnector = ApiConnector.getInstance();
-        when(client.executeMethod(get)).thenThrow(IOException.class);
-        apiConnector.performGetRequest("test");
+        when(mockedClient.executeMethod(mockedGet)).thenThrow(IOException.class);
+        apiConnector.performGetRequest(TEXT_MESSAGE_TEMPLATE_FOR_TEST);
 
         //then
-        Mockito.verify(client, Mockito.times(1)).executeMethod(get);
+        verify(mockedClient, times(1)).executeMethod(mockedGet);
     }
 
     @Test
-    public void test_ApiConnector_performPostRequest() throws Exception {
+    public void testApiConnectorPerformPostRequestValidParams() throws Exception {
         //given
-        PowerMockito.whenNew(PostMethod.class).withAnyArguments()
-                .thenReturn(post);
-        PowerMockito.whenNew(HttpClient.class).withAnyArguments().thenReturn(client);
+        whenNew(PostMethod.class).withAnyArguments().thenReturn(mockedPost);
+        whenNew(HttpClient.class).withAnyArguments().thenReturn(mockedClient);
 
         //when
         ApiConnector apiConnector = ApiConnector.getInstance();
-        doNothing().when(post).addParameter(POST_PARAM_NAME, POST_PARAM_VALUE);
-        when(client.executeMethod(post)).thenReturn(HttpStatus.SC_OK);
-        apiConnector.performPostRequest("Message for post msg", POST_PARAM_NAME, POST_PARAM_VALUE);
+        doNothing().when(mockedPost).addParameter(POST_PARAM_NAME, POST_PARAM_VALUE);
+        when(mockedClient.executeMethod(mockedPost)).thenReturn(HttpStatus.SC_OK);
+        apiConnector.performPostRequest(TEXT_MESSAGE_TEMPLATE_FOR_TEST, POST_PARAM_NAME, POST_PARAM_VALUE);
 
         //then
-        Mockito.verify(client, Mockito.times(1)).executeMethod(post);
+        verify(mockedClient, times(1)).executeMethod(mockedPost);
     }
 
     @Test
-    public void test_ApiConnector_performPostRequest_parameters_set() throws Exception {
+    public void testApiConnectorPerformPostRequestParametersSetting() throws Exception {
         //given
-        PowerMockito.whenNew(PostMethod.class).withAnyArguments().thenReturn(post);
-        PowerMockito.whenNew(HttpClient.class).withAnyArguments().thenReturn(client);
+        whenNew(PostMethod.class).withAnyArguments().thenReturn(mockedPost);
+        whenNew(HttpClient.class).withAnyArguments().thenReturn(mockedClient);
 
         //when
         ApiConnector apiConnector = ApiConnector.getInstance();
-        doNothing().when(post).addParameter(POST_PARAM_NAME, POST_PARAM_VALUE);
-        apiConnector.performPostRequest("Message for post msg", POST_PARAM_NAME, POST_PARAM_VALUE);
+        doNothing().when(mockedPost).addParameter(POST_PARAM_NAME, POST_PARAM_VALUE);
+        apiConnector.performPostRequest(TEXT_MESSAGE_TEMPLATE_FOR_TEST, POST_PARAM_NAME, POST_PARAM_VALUE);
 
         //then
-        Mockito.verify(post, Mockito.times(1)).addParameter(POST_PARAM_NAME, POST_PARAM_VALUE);
+        verify(mockedPost, times(1)).addParameter(POST_PARAM_NAME, POST_PARAM_VALUE);
     }
 
     @Test
     public void testApiConnectorPerformPostRequestExceptionCatching() throws Exception {
         //given
-        PowerMockito.whenNew(PostMethod.class).withAnyArguments().thenReturn(post);
-        PowerMockito.whenNew(HttpClient.class).withAnyArguments().thenReturn(client);
+        whenNew(PostMethod.class).withAnyArguments().thenReturn(mockedPost);
+        whenNew(HttpClient.class).withAnyArguments().thenReturn(mockedClient);
 
         //when
         ApiConnector apiConnector = ApiConnector.getInstance();
-        when(client.executeMethod(get)).thenThrow(IOException.class);
-        apiConnector.performPostRequest("Message for post msg", POST_PARAM_NAME, POST_PARAM_VALUE);
+        when(mockedClient.executeMethod(mockedGet)).thenThrow(IOException.class);
+        apiConnector.performPostRequest(TEXT_MESSAGE_TEMPLATE_FOR_TEST, POST_PARAM_NAME, POST_PARAM_VALUE);
 
         //then
-        Mockito.verify(client, Mockito.times(1)).executeMethod(post);
+        verify(mockedClient, times(1)).executeMethod(mockedPost);
     }
 
     @Test
-    public void testApiConnectorGetInstanceNotNull() {
+    public void testApiConnectorGetInstanceIsNotNull() {
         ApiConnector apiConnector = ApiConnector.getInstance();
         assertNotNull("Instance wasn't recieved", apiConnector);
     }
 
-    @After
-    public void cleanUp() {
-        Mockito.reset(post);
-        Mockito.reset(get);
-        Mockito.reset(client);
+    @Test
+    public void testApiConnectorConstructorExecution() throws Exception {
+        //given
+        Constructor<ApiConnector> constructor = ApiConnector.class.getDeclaredConstructor();
+
+        //when
+        assertFalse(constructor.isAccessible());
+        constructor.setAccessible(true);
+
+        //then
+        constructor.newInstance((Object[]) null);
     }
 }
