@@ -119,7 +119,7 @@ public class ApiConnectorTests extends BaseTest {
 
         //when
         ApiConnector apiConnector = ApiConnector.getInstance();
-        when(mockedClient.executeMethod(mockedGet)).thenThrow(IOException.class);
+        when(mockedClient.executeMethod(mockedPost)).thenThrow(IOException.class);
         apiConnector.performPostRequest(TEXT_MESSAGE_TEMPLATE_FOR_TEST, POST_PARAM_NAME, POST_PARAM_VALUE);
 
         //then

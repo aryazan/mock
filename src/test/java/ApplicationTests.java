@@ -24,7 +24,7 @@ public class ApplicationTests extends BaseTest {
     @Before
     public void setUp() throws Exception {
         apiConnector = mock(ApiConnector.class);
-        PowerMockito.whenNew(ApiConnector.class).withAnyArguments().thenReturn(apiConnector);
+        whenNew(ApiConnector.class).withAnyArguments().thenReturn(apiConnector);
         when(ApiConnector.getInstance()).thenReturn(apiConnector);
     }
 
