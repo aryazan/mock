@@ -10,10 +10,8 @@ import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.io.IOException;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
 
 import static org.junit.Assert.*;
-import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.powermock.api.mockito.PowerMockito.*;
@@ -128,12 +126,17 @@ public class ApiConnectorTests extends BaseTest {
 
     @Test
     public void testApiConnectorGetInstanceIsNotNull() {
+        //when
         ApiConnector apiConnector = ApiConnector.getInstance();
+
+        //then
         assertNotNull("Instance wasn't recieved", apiConnector);
     }
 
     @Test
     public void testApiConnectorConstructorExecution() throws Exception {
+        //This test just checking that consturctor from class ApiConnector is working without exceptions via
+        // Reflection API
         //given
         Constructor<ApiConnector> constructor = ApiConnector.class.getDeclaredConstructor();
 

@@ -1,13 +1,10 @@
 import org.apache.http.HttpStatus;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
-import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
-import org.powermock.reflect.Whitebox;
 
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.times;
@@ -19,6 +16,10 @@ import static org.powermock.api.mockito.PowerMockito.*;
 public class ApplicationTests extends BaseTest {
 
     private static final int INVALID_SWITCH_CASE_NUMBER = 0;
+    private static final int SEND_GET_CASE_NUMBER = 1;
+    private static final int SEND_POST_CASE_NUMBER = 2;
+    private static final int SEND_GET_IN_ANOTHER_THREAD_CASE_NUMBER = 3;
+    private static final int SEND_POST_IF_GET_200_CASE_NUMBER = 4;
     private ApiConnector apiConnector;
 
     @Before
@@ -28,11 +29,6 @@ public class ApplicationTests extends BaseTest {
         when(ApiConnector.getInstance()).thenReturn(apiConnector);
     }
 
-    @After
-    public void cleanUp() {
-        Whitebox.setInternalState(ApiConnector.class, "instance", (Object[]) null);
-    }
-
     @Test
     public void testApplicationSendGetApiRequestViaConnector() throws Exception {
         //given
@@ -40,7 +36,7 @@ public class ApplicationTests extends BaseTest {
 
         //when
         Application application = new Application();
-        application.runMethod(1);
+        application.runMethod(SEND_GET_CASE_NUMBER);
 
         //then
         verify(apiConnector, times(1)).performGetRequest(anyString());
@@ -53,7 +49,7 @@ public class ApplicationTests extends BaseTest {
 
         //when
         Application application = new Application();
-        application.runMethod(2);
+        application.runMethod(SEND_POST_CASE_NUMBER);
 
         //then
         verify(apiConnector, times(1))
@@ -68,7 +64,7 @@ public class ApplicationTests extends BaseTest {
 
         //when
         Application application = new Application();
-        application.runMethod(4);
+        application.runMethod(SEND_POST_IF_GET_200_CASE_NUMBER);
 
         //then
         verify(apiConnector, times(1))
@@ -82,7 +78,7 @@ public class ApplicationTests extends BaseTest {
 
         //when
         Application application = new Application();
-        application.runMethod(4);
+        application.runMethod(SEND_POST_IF_GET_200_CASE_NUMBER);
     }
 
     @Test
@@ -108,7 +104,7 @@ public class ApplicationTests extends BaseTest {
                 .thenReturn(mockedThread);
         when(apiConnector.performGetRequest(anyString())).thenReturn(HttpStatus.SC_OK);
         Application application = new Application();
-        application.runMethod(3);
+        application.runMethod(SEND_GET_IN_ANOTHER_THREAD_CASE_NUMBER);
         runnables.getValue().run();
 
         //then
