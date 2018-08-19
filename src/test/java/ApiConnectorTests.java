@@ -40,9 +40,9 @@ public class ApiConnectorTests extends BaseTest {
         //given
         whenNew(GetMethod.class).withAnyArguments().thenReturn(mockedGet);
         whenNew(HttpClient.class).withAnyArguments().thenReturn(mockedClient);
+        ApiConnector apiConnector = ApiConnector.getInstance();
 
         //when
-        ApiConnector apiConnector = ApiConnector.getInstance();
         when(mockedGet.getStatusCode()).thenReturn(HttpStatus.SC_OK);
 
         //then
@@ -54,9 +54,9 @@ public class ApiConnectorTests extends BaseTest {
         //given
         whenNew(GetMethod.class).withAnyArguments().thenReturn(mockedGet);
         whenNew(HttpClient.class).withAnyArguments().thenReturn(mockedClient);
+        ApiConnector apiConnector = ApiConnector.getInstance();
 
         //when
-        ApiConnector apiConnector = ApiConnector.getInstance();
         when(mockedClient.executeMethod(mockedGet)).thenThrow(IOException.class);
 
         //then
@@ -68,9 +68,9 @@ public class ApiConnectorTests extends BaseTest {
         //given
         whenNew(GetMethod.class).withAnyArguments().thenReturn(mockedGet);
         whenNew(HttpClient.class).withAnyArguments().thenReturn(mockedClient);
+        ApiConnector apiConnector = ApiConnector.getInstance();
 
         //when
-        ApiConnector apiConnector = ApiConnector.getInstance();
         when(mockedClient.executeMethod(mockedGet)).thenThrow(IOException.class);
         apiConnector.performGetRequest(TEXT_MESSAGE_TEMPLATE_FOR_TEST);
 
@@ -83,9 +83,9 @@ public class ApiConnectorTests extends BaseTest {
         //given
         whenNew(PostMethod.class).withAnyArguments().thenReturn(mockedPost);
         whenNew(HttpClient.class).withAnyArguments().thenReturn(mockedClient);
+        ApiConnector apiConnector = ApiConnector.getInstance();
 
         //when
-        ApiConnector apiConnector = ApiConnector.getInstance();
         doNothing().when(mockedPost).addParameter(POST_PARAM_NAME, POST_PARAM_VALUE);
         when(mockedClient.executeMethod(mockedPost)).thenReturn(HttpStatus.SC_OK);
         apiConnector.performPostRequest(TEXT_MESSAGE_TEMPLATE_FOR_TEST, POST_PARAM_NAME, POST_PARAM_VALUE);
@@ -99,9 +99,9 @@ public class ApiConnectorTests extends BaseTest {
         //given
         whenNew(PostMethod.class).withAnyArguments().thenReturn(mockedPost);
         whenNew(HttpClient.class).withAnyArguments().thenReturn(mockedClient);
+        ApiConnector apiConnector = ApiConnector.getInstance();
 
         //when
-        ApiConnector apiConnector = ApiConnector.getInstance();
         doNothing().when(mockedPost).addParameter(POST_PARAM_NAME, POST_PARAM_VALUE);
         apiConnector.performPostRequest(TEXT_MESSAGE_TEMPLATE_FOR_TEST, POST_PARAM_NAME, POST_PARAM_VALUE);
 
@@ -114,9 +114,9 @@ public class ApiConnectorTests extends BaseTest {
         //given
         whenNew(PostMethod.class).withAnyArguments().thenReturn(mockedPost);
         whenNew(HttpClient.class).withAnyArguments().thenReturn(mockedClient);
+        ApiConnector apiConnector = ApiConnector.getInstance();
 
         //when
-        ApiConnector apiConnector = ApiConnector.getInstance();
         when(mockedClient.executeMethod(mockedPost)).thenThrow(IOException.class);
         apiConnector.performPostRequest(TEXT_MESSAGE_TEMPLATE_FOR_TEST, POST_PARAM_NAME, POST_PARAM_VALUE);
 
@@ -131,6 +131,16 @@ public class ApiConnectorTests extends BaseTest {
 
         //then
         assertNotNull("Instance wasn't recieved", apiConnector);
+    }
+
+    @Test
+    public void testApiConnectorGetInstanceSingleton(){
+        //when
+        ApiConnector firstCallSingleton = ApiConnector.getInstance();
+        ApiConnector secondCallSingleton = ApiConnector.getInstance();
+
+        //then
+        assertEquals("Objects are not equal", firstCallSingleton, secondCallSingleton);
     }
 
     @Test

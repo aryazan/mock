@@ -1,4 +1,7 @@
+import aqa.logger.Logger;
 import org.apache.http.HttpStatus;
+
+
 
 public class Application {
     private void sendGetApiRequestViaConnector() {
